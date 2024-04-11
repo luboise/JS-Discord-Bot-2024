@@ -5,6 +5,7 @@ import {
     Collection,
     Events,
     GatewayIntentBits,
+    Message,
     REST,
     Routes,
 } from "discord.js";
@@ -20,23 +21,26 @@ declare module "discord.js" {
 }
 
 // Create a new client instance
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.GuildMessageReactions,
+        GatewayIntentBits.MessageContent,
+    ],
+});
 
 const commands = getCommandCollection();
 
 client.commands = commands;
 
-
 // The distinction between `client: Client<boolean>` and `readyClient: Client<true>` is important for TypeScript developers.
 // It makes some properties non-nullable.
 client.once(Events.ClientReady, (readyClient: Client<true>) => {
-	console.log("Client ready. Deploying commands now...");
-	deployCommands(commands);
+    console.log("Client ready. Deploying commands now...");
+    deployCommands(commands);
     console.log(`Ready! Logged in as ${readyClient.user.tag}`);
 });
-
-// Log in to Discord with your client's token
-client.login(process.env.DISCORD_TOKEN);
 
 client.on(Events.InteractionCreate, async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
@@ -67,6 +71,29 @@ client.on(Events.InteractionCreate, async (interaction) => {
         }
     }
 });
+
+function checkForIm(message: Message) {
+	const regex = /\b[i]'?m\b\s+(.*)/i;
+	const match = message.content.match(regex);
+
+	if (match) {
+		const wantedIndex = (match.index || 0) + match.length;
+		const newName = message.content.substring(wantedIndex, wantedIndex + 32);
+		console.log(newName.length);
+		
+		message.member?.setNickname(newName);
+		message.react("👍");
+	}
+}
+
+client.on(Events.MessageCreate, async (message: Message) => {
+    if (message.author.bot) return;
+
+    checkForIm(message);
+});
+
+// Log in to Discord with your client's token
+client.login(process.env.DISCORD_TOKEN);
 
 async function deployCommands(commands: CommandCollection) {
     try {
