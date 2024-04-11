@@ -79,7 +79,6 @@ function checkForIm(message: Message) {
 	if (match) {
 		const wantedIndex = (match.index || 0) + match.length;
 		const newName = message.content.substring(wantedIndex, wantedIndex + 32);
-		console.log(newName.length);
 		
 		message.member?.setNickname(newName);
 		message.react("👍");
