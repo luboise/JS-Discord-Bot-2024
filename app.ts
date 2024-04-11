@@ -116,7 +116,7 @@ async function checkForYoure(message: Message) {
     );
 
 	// Prevent self replies
-	if (message.member === repliedMessage.member) return;
+	if (message.member === repliedMessage.member || repliedMessage.member?.id === message.guild?.ownerId) return;
 
     const regex = /(you'?re)\s+/i;
 	const regex2 = /^(your)\s+/i;
@@ -134,9 +134,14 @@ async function checkForYoure(message: Message) {
             throw Error("Bad length.");
         }
 
-        repliedMessage.member?.setNickname(newName);
-        repliedMessage.react("🤭");
-        message.react("🤯");
+		try {
+			repliedMessage.member?.setNickname(newName);
+        	repliedMessage.react("🤭");
+        	message.react("🤯");
+		} catch (e) {
+			console.error(e);
+			return;
+		}
     }
 }
 
