@@ -1,0 +1,26 @@
+{
+    "name": "js-discord-bot",
+    "version": "1.0.0",
+    "description": "",
+    "main": "app.ts",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "dev": "nodemon app.ts",
+        "start": "node app.ts"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/luboise/JS-Discord-Bot-2023.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/luboise/JS-Discord-Bot-2023/issues"
+    },
+    "homepage": "https://github.com/luboise/JS-Discord-Bot-2023#readme",
+    "dependencies": {
+        "discord.js": "^14.14.1",
+        "dotenv": "^16.4.5",
+        "nodemon": "^3.1.0"
+    }
+}

@@ -1,1 +1,0 @@
-# JS-Discord-Bot-2023
