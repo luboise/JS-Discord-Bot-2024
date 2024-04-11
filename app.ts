@@ -76,13 +76,13 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 function checkForIm(message: Message) {
     try {
+		if (message.member?.id === message.guild?.ownerId) return;
+
         const regex = /(i'?m\s+)/i;
         const regex2 = /(i\s+am\s+)/i;
 
         const matches =
             message.content.match(regex) || message.content.match(regex2);
-
-		console.log(matches);
 
         if (matches && matches.index !== undefined) {
             const wantedIndex = matches.index + matches[0].length;
