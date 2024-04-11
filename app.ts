@@ -6,6 +6,8 @@ import {
     Events,
     GatewayIntentBits,
     Message,
+    MessageFlags,
+    MessageType,
     REST,
     Routes,
 } from "discord.js";
@@ -73,22 +75,79 @@ client.on(Events.InteractionCreate, async (interaction) => {
 });
 
 function checkForIm(message: Message) {
-	const regex = /\b[i]'?m\b\s+(.*)/i;
-	const match = message.content.match(regex);
+    try {
+        const regex = /(i'?m\s+)/i;
+        const regex2 = /(i\s+am\s+)/i;
 
-	if (match) {
-		const wantedIndex = (match.index || 0) + match.length;
-		const newName = message.content.substring(wantedIndex, wantedIndex + 32);
-		
-		message.member?.setNickname(newName);
-		message.react("👍");
-	}
+        const matches =
+            message.content.match(regex) || message.content.match(regex2);
+
+		console.log(matches);
+
+        if (matches && matches.index !== undefined) {
+            const wantedIndex = matches.index + matches[0].length;
+            let newName = message.content.substring(wantedIndex);
+
+            if (newName.length === 0) {
+                throw Error("Bad length.");
+            } else if (newName.length > 32) {
+				newName = newName.slice(0, 31);
+			}
+
+            message.member?.setNickname(newName);
+            message.react("👍");
+        }
+    } catch (e) {
+        console.error(e);
+        return;
+    }
+}
+
+async function checkForYoure(message: Message) {
+    if (
+        message.type !== MessageType.Reply ||
+        message.reference === null ||
+        message.reference.messageId === undefined
+    )
+        return;
+
+    const repliedMessage = await message.channel.messages.fetch(
+        message.reference.messageId
+    );
+
+	// Prevent self replies
+	if (message.member === repliedMessage.member) return;
+
+    const regex = /(you'?re)\s+/i;
+	const regex2 = /^(your)\s+/i;
+
+    const matches = message.content.match(regex) || message.content.match(regex2);
+
+    if (matches && matches.index !== undefined) {
+        const wantedIndex = matches.index + matches[0].length;
+        const newName = message.content.substring(
+            wantedIndex,
+            wantedIndex + 32
+        );
+
+        if (newName.length === 0) {
+            throw Error("Bad length.");
+        }
+
+        repliedMessage.member?.setNickname(newName);
+        repliedMessage.react("🤭");
+        message.react("🤯");
+    }
 }
 
 client.on(Events.MessageCreate, async (message: Message) => {
     if (message.author.bot) return;
-
-    checkForIm(message);
+    try {
+        checkForIm(message);
+        checkForYoure(message);
+    } catch (e) {
+        console.error(e);
+    }
 });
 
 // Log in to Discord with your client's token
