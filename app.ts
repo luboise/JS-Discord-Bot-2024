@@ -23,13 +23,15 @@ declare module "discord.js" {
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 const commands = getCommandCollection();
+
 client.commands = commands;
 
-deployCommands(commands);
 
 // The distinction between `client: Client<boolean>` and `readyClient: Client<true>` is important for TypeScript developers.
 // It makes some properties non-nullable.
 client.once(Events.ClientReady, (readyClient: Client<true>) => {
+	console.log("Client ready. Deploying commands now...");
+	deployCommands(commands);
     console.log(`Ready! Logged in as ${readyClient.user.tag}`);
 });
 
@@ -69,9 +71,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 async function deployCommands(commands: CommandCollection) {
     try {
         console.log(
-            `Started refreshing ${
-                Object.keys(commands).length
-            } application (/) commands.`
+            `Started refreshing ${commands.size} application (/) commands.`
         );
 
         // Construct and prepare an instance of the REST module
@@ -96,9 +96,7 @@ async function deployCommands(commands: CommandCollection) {
                 `Successfully reloaded ${data.length} application (/) commands for guild ${guildId}.`
             );
         });
-        console.log(
-            `Successfully reloaded application (/) commands.`
-        );
+        console.log(`Successfully reloaded application (/) commands.`);
     } catch (error) {
         // And of course, make sure you catch and log any errors!
         console.error(error);

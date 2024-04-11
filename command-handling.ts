@@ -1,6 +1,6 @@
 require("dotenv").config();
 
-import { Collection, REST } from "discord.js";
+import { Collection } from "discord.js";
 
 import * as fs from "node:fs";
 import * as path from "node:path";
@@ -21,28 +21,10 @@ export function getCommandCollection(): CommandCollection {
         for (const file of commandFiles) {
             const filePath = path.join(commandsPath, file);
 
-            let command: Command;
-
-            import(filePath)
-                .then((module) => {
-                    command = module.default as Command;
-                    if (!command) throw TypeError;
-
-                    commands.set(command.data.name, command);
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
-
-            // Set a new item in the Collection with the key as the command name and the value as the exported module
-            // if (command) {
-            //     commands.set(command.data.name, command);
-            // } else {
-            //     console.log(
-            //         `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
-            //     );
-            //     // console.log(command);
-            // }
+            const command = require(filePath).default as Command;
+            if (!command) {throw TypeError(`Bad command found: ${command}`);}
+            
+            commands.set(command.data.name, command);
         }
     }
 
