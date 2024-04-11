@@ -121,7 +121,8 @@ async function checkForYoure(message: Message) {
     const regex = /(you'?re)\s+/i;
 	const regex2 = /^(your)\s+/i;
 
-    const matches = message.content.match(regex) || message.content.match(regex2);
+    let matches = message.content.match(regex);
+	if (!matches) matches = message.content.match(regex2);
 
     if (matches && matches.index !== undefined) {
         const wantedIndex = matches.index + matches[0].length;
