@@ -1,6 +1,7 @@
 import { Message } from "discord.js";
+import { MessageCommand } from "../../types";
 
-function checkForIm(message: Message) {
+const checkForIm: MessageCommand = (message: Message) => {
     try {
 		if (message.member?.id === message.guild?.ownerId) return;
 
