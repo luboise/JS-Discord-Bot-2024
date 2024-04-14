@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, Collection, SlashCommandBuilder } from "discord.js";
+import { ChatInputCommandInteraction, Collection, Message, SlashCommandBuilder } from "discord.js";
 
 export type ExecutionFunction = (
     interaction: ChatInputCommandInteraction
@@ -12,3 +12,5 @@ export type Command =
     | undefined;
 
 export type CommandCollection = Collection<string, Command>;
+
+export type MessageCommand = (message: Message) => void; 

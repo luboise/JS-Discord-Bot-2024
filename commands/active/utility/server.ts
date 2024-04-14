@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
-import { Command, ExecutionFunction } from "../../types";
+import { Command, ExecutionFunction } from "../../../types";
 
 const data = new SlashCommandBuilder()
     .setName("server")

@@ -12,7 +12,7 @@ import {
     Routes,
 } from "discord.js";
 
-import { getCommandCollection } from "./command-handling";
+import { getCommandCollection, getOnMessageCommands } from "./command-handling";
 
 import { Command, CommandCollection } from "./types";
 
@@ -74,86 +74,10 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
 });
 
-function checkForIm(message: Message) {
-    try {
-		if (message.member?.id === message.guild?.ownerId) return;
-
-        const regex = /(i'?m\s+)/i;
-        const regex2 = /(i\s+am\s+)/i;
-
-        const matches =
-            message.content.match(regex) || message.content.match(regex2);
-
-        if (matches && matches.index !== undefined) {
-            const wantedIndex = matches.index + matches[0].length;
-            let newName = message.content.substring(wantedIndex);
-
-            if (newName.length === 0) {
-                throw Error("Bad length.");
-            } else if (newName.length > 32) {
-				newName = newName.slice(0, 31);
-			}
-
-            message.member?.setNickname(newName);
-            message.react("👍");
-        }
-    } catch (e) {
-        console.error(e);
-        return;
-    }
-}
-
-async function checkForYoure(message: Message) {
-    if (
-        message.type !== MessageType.Reply ||
-        message.reference === null ||
-        message.reference.messageId === undefined
-    )
-        return;
-
-    const repliedMessage = await message.channel.messages.fetch(
-        message.reference.messageId
-    );
-
-	// Prevent self replies
-	if (message.member === repliedMessage.member || repliedMessage.member?.id === message.guild?.ownerId) return;
-
-    const regex = /(you'?re)\s+/i;
-	const regex2 = /^(your)\s+/i;
-
-    let matches = message.content.match(regex);
-	if (!matches) matches = message.content.match(regex2);
-
-    if (matches && matches.index !== undefined) {
-        const wantedIndex = matches.index + matches[0].length;
-        const newName = message.content.substring(
-            wantedIndex,
-            wantedIndex + 32
-        );
-
-        if (newName.length === 0) {
-            throw Error("Bad length.");
-        }
-
-		try {
-			repliedMessage.member?.setNickname(newName);
-        	repliedMessage.react("🤭");
-        	message.react("🤯");
-		} catch (e) {
-			console.error(e);
-			return;
-		}
-    }
-}
-
+const onMessageCommands = getOnMessageCommands();
 client.on(Events.MessageCreate, async (message: Message) => {
     if (message.author.bot) return;
-    try {
-        checkForIm(message);
-        checkForYoure(message);
-    } catch (e) {
-        console.error(e);
-    }
+    onMessageCommands.forEach((command)=>{command(message)})
 });
 
 // Log in to Discord with your client's token
