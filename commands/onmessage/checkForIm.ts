@@ -5,7 +5,7 @@ const checkForIm: MessageCommand = (message: Message) => {
     try {
 		if (message.member?.id === message.guild?.ownerId) return;
 
-        const regex = /(i'?m\s+)/i;
+        const regex = /(i('|’)?m\s+)/i;
         const regex2 = /(i\s+am\s+)/i;
 
         const matches =

@@ -16,7 +16,7 @@ const checkForYoure: MessageCommand = async (message: Message) =>  {
 	// Prevent self replies
 	if (message.member === repliedMessage.member || repliedMessage.member?.id === message.guild?.ownerId) return;
 
-    const regex = /(you'?re)\s+/i;
+    const regex = /(you('|’)?re)\s+/i;
 	const regex2 = /^(your)\s+/i;
 
     let matches = message.content.match(regex);
