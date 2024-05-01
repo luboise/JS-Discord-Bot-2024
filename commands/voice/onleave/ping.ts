@@ -38,8 +38,6 @@ const startPingLoop = async (
     user: User
 ) => {
     setTimeout(() => {
-        ghostPing(channel, user);
-
         const pingLoop = async () => {
             const vcData = getUserVCData(guild, user);
             if (!vcData || vcData.timeLastLeft! > 0) {
@@ -55,8 +53,7 @@ const startPingLoop = async (
             //     msg.delete();
             // }
         };
-
-        setTimeout(pingLoop, randRange(MIN_PING_FREQUENCY, MAX_PING_FREQUENCY));
+        pingLoop();
     }, 1000 * 60);
 };
 
