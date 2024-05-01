@@ -21,14 +21,16 @@ const REACTIONS = [
     "My reply is no.",
     "My sources say no.",
     "Outlook not so good.",
-    "Very doubtful."
+    "Very doubtful.",
 ];
 
-const magic8Ball: MessageCommand = (message: Message) => {    
-    const response = `${REACTIONS[Math.floor(Math.random() * REACTIONS.length)]}`;
+const magic8Ball: MessageCommand = (message: Message) => {
+    const response = `${
+        REACTIONS[Math.floor(Math.random() * REACTIONS.length)]
+    }`;
     if (message.content.endsWith("?")) {
         message.reply(`🎱 ～ "${response}"`);
     }
-}
+};
 
 export default magic8Ball;

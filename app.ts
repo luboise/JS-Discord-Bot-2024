@@ -77,7 +77,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
 const onMessageCommands = getOnMessageCommands();
 client.on(Events.MessageCreate, async (message: Message) => {
     if (message.author.bot) return;
-    onMessageCommands.forEach((command)=>{command(message)})
+    onMessageCommands.forEach((command) => {
+        command(message);
+    });
 });
 
 // Log in to Discord with your client's token

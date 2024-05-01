@@ -3,7 +3,7 @@ import { MessageCommand } from "../../types";
 
 const checkForIm: MessageCommand = (message: Message) => {
     try {
-		if (message.member?.id === message.guild?.ownerId) return;
+        if (message.member?.id === message.guild?.ownerId) return;
 
         const regex = /(i('|’)?m\s+)/i;
         const regex2 = /(i\s+am\s+)/i;
@@ -18,8 +18,8 @@ const checkForIm: MessageCommand = (message: Message) => {
             if (newName.length === 0) {
                 throw Error("Bad length.");
             } else if (newName.length > 32) {
-				newName = newName.slice(0, 31);
-			}
+                newName = newName.slice(0, 31);
+            }
 
             message.member?.setNickname(newName);
             message.react("👍");
@@ -28,6 +28,6 @@ const checkForIm: MessageCommand = (message: Message) => {
         console.error(e);
         return;
     }
-}
+};
 
 export default checkForIm;

@@ -22,8 +22,10 @@ export function getCommandCollection(): CommandCollection {
             const filePath = path.join(commandsPath, file);
 
             const command = require(filePath).default as Command;
-            if (!command) {throw TypeError(`Bad command found: ${command}`);}
-            
+            if (!command) {
+                throw TypeError(`Bad command found: ${command}`);
+            }
+
             commands.set(command.data.name, command);
         }
     }
@@ -31,23 +33,24 @@ export function getCommandCollection(): CommandCollection {
     return commands;
 }
 
-
 export function getOnMessageCommands(): Array<MessageCommand> {
     const commands: Array<MessageCommand> = [];
 
     const commandFolder = path.join(__dirname, "commands", "onmessage");
 
-    const commandFiles = fs.readdirSync(commandFolder)
+    const commandFiles = fs
+        .readdirSync(commandFolder)
         .filter((file) => file.endsWith(".ts"));
     for (const file of commandFiles) {
         const filePath = path.join(commandFolder, file);
 
         const command = require(filePath).default as MessageCommand;
-        if (!command) {throw TypeError(`Bad command found: ${command}`);}
-        
+        if (!command) {
+            throw TypeError(`Bad command found: ${command}`);
+        }
+
         commands.push(command);
     }
-    
 
     return commands;
 }

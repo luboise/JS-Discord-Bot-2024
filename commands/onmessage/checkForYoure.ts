@@ -1,7 +1,7 @@
 import { Message, MessageType } from "discord.js";
 import { MessageCommand } from "../../types";
 
-const checkForYoure: MessageCommand = async (message: Message) =>  {
+const checkForYoure: MessageCommand = async (message: Message) => {
     if (
         message.type !== MessageType.Reply ||
         message.reference === null ||
@@ -13,14 +13,18 @@ const checkForYoure: MessageCommand = async (message: Message) =>  {
         message.reference.messageId
     );
 
-	// Prevent self replies
-	if (message.member === repliedMessage.member || repliedMessage.member?.id === message.guild?.ownerId) return;
+    // Prevent self replies
+    if (
+        message.member === repliedMessage.member ||
+        repliedMessage.member?.id === message.guild?.ownerId
+    )
+        return;
 
     const regex = /(you('|’)?re)\s+/i;
-	const regex2 = /^(your)\s+/i;
+    const regex2 = /^(your)\s+/i;
 
     let matches = message.content.match(regex);
-	if (!matches) matches = message.content.match(regex2);
+    if (!matches) matches = message.content.match(regex2);
 
     if (matches && matches.index !== undefined) {
         const wantedIndex = matches.index + matches[0].length;
@@ -33,15 +37,15 @@ const checkForYoure: MessageCommand = async (message: Message) =>  {
             throw Error("Bad length.");
         }
 
-		try {
-			repliedMessage.member?.setNickname(newName);
-        	repliedMessage.react("🤭");
-        	message.react("🤯");
-		} catch (e) {
-			console.error(e);
-			return;
-		}
+        try {
+            repliedMessage.member?.setNickname(newName);
+            repliedMessage.react("🤭");
+            message.react("🤯");
+        } catch (e) {
+            console.error(e);
+            return;
+        }
     }
-}
+};
 
 export default checkForYoure;
