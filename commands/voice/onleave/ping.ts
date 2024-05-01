@@ -2,9 +2,11 @@ import { ChannelType, Guild, TextChannel, User } from "discord.js";
 import { VoiceCommand } from "../../../types";
 import { UserVCList, getUserVCData } from "../../../utils/userTracking";
 import panicGetTextChannel from "../../../utils/panicGetTextChannel";
+import randRange from "../../../utils/randRange";
 
 const EARLY_THRESHOLD = 10000;
-const PING_FREQUENCY = 2000;
+const MIN_PING_FREQUENCY = 10 * 1000;
+const MAX_PING_FREQUENCY = 25 * 1000;
 
 const ping: VoiceCommand = (newState) => {
     const user = newState.member?.user;
@@ -25,24 +27,37 @@ const ping: VoiceCommand = (newState) => {
     }
 };
 
+async function ghostPing(channel: TextChannel, user: User) {
+    const msg = await channel.send(`${user}`);
+    msg.delete();
+}
+
 const startPingLoop = async (
     channel: TextChannel,
     guild: Guild,
     user: User
 ) => {
-    channel.send(`${user} OI`);
+    setTimeout(() => {
+        ghostPing(channel, user);
 
-    const pingLoop = async () => {
-        const vcData = getUserVCData(guild, user);
-        if (!vcData || vcData.timeLastLeft! > 0) {
-            channel.send(`${user}`);
-            setTimeout(pingLoop, PING_FREQUENCY);
-        } else {
-            channel.send(`${user} 👍`);
-        }
-    };
+        const pingLoop = async () => {
+            const vcData = getUserVCData(guild, user);
+            if (!vcData || vcData.timeLastLeft! > 0) {
+                ghostPing(channel, user);
 
-    setTimeout(pingLoop, PING_FREQUENCY);
+                setTimeout(
+                    pingLoop,
+                    randRange(MIN_PING_FREQUENCY, MAX_PING_FREQUENCY)
+                );
+            }
+            // else {
+            //     const msg = await channel.send(`${user} 👍`);
+            //     msg.delete();
+            // }
+        };
+
+        setTimeout(pingLoop, randRange(MIN_PING_FREQUENCY, MAX_PING_FREQUENCY));
+    }, 1000 * 60);
 };
 
 export default ping;
