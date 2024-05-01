@@ -38,32 +38,15 @@ export function getCommandCollection(): CommandCollection {
     return commands;
 }
 
-export function getOnMessageCommands(): Array<MessageCommand> {
-    const commands: Array<MessageCommand> = [];
+export function getCommands<T>(commandPath: string | Array<string>): Array<T> {
+    const commands: Array<T> = [];
 
-    const commandFolder = path.join(__dirname, "commands", "onmessage");
-
-    const commandFiles = fs
-        .readdirSync(commandFolder)
-        .filter((file) => file.endsWith(".ts"));
-    for (const file of commandFiles) {
-        const filePath = path.join(commandFolder, file);
-
-        const command = require(filePath).default as MessageCommand;
-        if (!command) {
-            throw TypeError(`Bad command found: ${command}`);
-        }
-
-        commands.push(command);
-    }
-
-    return commands;
-}
-
-export function getOnJoinCommands(): Array<VoiceCommand> {
-    const commands: Array<VoiceCommand> = [];
-
-    const commandFolder = path.join(__dirname, "commands", "voice", "onjoin");
+    const commandFolder: string = Array.isArray(commandPath)
+        ? commandPath.reduce(
+              (a, b) => path.join(a, b),
+              path.join(__dirname, "commands")
+          )
+        : commandPath;
 
     const commandFiles = fs
         .readdirSync(commandFolder)
@@ -71,29 +54,7 @@ export function getOnJoinCommands(): Array<VoiceCommand> {
     for (const file of commandFiles) {
         const filePath = path.join(commandFolder, file);
 
-        const command = require(filePath).default as VoiceCommand;
-        if (!command) {
-            throw TypeError(`Bad command found: ${command}`);
-        }
-
-        commands.push(command);
-    }
-
-    return commands;
-}
-
-export function getOnLeaveCommands(): Array<VoiceCommand> {
-    const commands: Array<VoiceCommand> = [];
-
-    const commandFolder = path.join(__dirname, "commands", "voice", "onleave");
-
-    const commandFiles = fs
-        .readdirSync(commandFolder)
-        .filter((file) => file.endsWith(".ts"));
-    for (const file of commandFiles) {
-        const filePath = path.join(commandFolder, file);
-
-        const command = require(filePath).default as VoiceCommand;
+        const command = require(filePath).default as T;
         if (!command) {
             throw TypeError(`Bad command found: ${command}`);
         }

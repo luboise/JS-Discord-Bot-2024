@@ -6,20 +6,18 @@ import {
     Events,
     GatewayIntentBits,
     Message,
-    MessageFlags,
-    MessageType,
     REST,
     Routes,
 } from "discord.js";
 
-import {
-    getCommandCollection,
-    getOnJoinCommands,
-    getOnLeaveCommands,
-    getOnMessageCommands,
-} from "./command-handling";
+import { getCommandCollection, getCommands } from "./command-handling";
 
-import { Command, CommandCollection } from "./types";
+import {
+    Command,
+    CommandCollection,
+    MessageCommand,
+    VoiceCommand,
+} from "./types";
 
 declare module "discord.js" {
     interface Client {
@@ -39,7 +37,6 @@ const client = new Client({
 });
 
 const commands = getCommandCollection();
-
 client.commands = commands;
 
 // The distinction between `client: Client<boolean>` and `readyClient: Client<true>` is important for TypeScript developers.
@@ -80,7 +77,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
 });
 
-const onMessageCommands = getOnMessageCommands();
+const onMessageCommands = getCommands<MessageCommand>(["onmessage"]);
 client.on(Events.MessageCreate, async (message: Message) => {
     if (message.author.bot) return;
     onMessageCommands.forEach((command) => {
@@ -88,8 +85,8 @@ client.on(Events.MessageCreate, async (message: Message) => {
     });
 });
 
-const onJoin = getOnJoinCommands();
-const onLeave = getOnLeaveCommands();
+const onJoin = getCommands<VoiceCommand>(["voice", "onjoin"]);
+const onLeave = getCommands<VoiceCommand>(["voice", "onleave"]);
 
 client.on(Events.VoiceStateUpdate, (oldState, newState) => {
     if (newState.member?.user.bot) return;
