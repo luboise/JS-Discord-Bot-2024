@@ -35,10 +35,10 @@ function recordUserJoinTime(guild: Guild, user: User): void {
 }
 
 function recordUserLeaveTime(guild: Guild, user: User): void {
-    const guc = getGUC(guild, user);
-    if (!guc) return;
+    const vcData = getUserVCData(guild, user);
+    if (!vcData) return;
 
-    UserVCList[guc].timeLastLeft = Date.now();
+    vcData.timeLastLeft = Date.now();
 }
 
 function deleteUserFromDB(guc: GuildUserCombo): boolean {
@@ -50,7 +50,7 @@ function deleteUserFromDB(guc: GuildUserCombo): boolean {
 
 function getUserVCData(guild: Guild, user: User): VoiceChannelData | null {
     const guc = getGUC(guild, user);
-    if (guc) return UserVCList[guc];
+    if (guc && guc in UserVCList) return UserVCList[guc];
 
     return null;
 }
