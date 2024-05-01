@@ -3,6 +3,7 @@ import {
     Collection,
     Message,
     SlashCommandBuilder,
+    VoiceState,
 } from "discord.js";
 
 export type ExecutionFunction = (
@@ -19,3 +20,4 @@ export type Command =
 export type CommandCollection = Collection<string, Command>;
 
 export type MessageCommand = (message: Message) => void;
+export type VoiceCommand = (newState: VoiceState) => void;

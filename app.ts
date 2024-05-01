@@ -12,7 +12,12 @@ import {
     Routes,
 } from "discord.js";
 
-import { getCommandCollection, getOnMessageCommands } from "./command-handling";
+import {
+    getCommandCollection,
+    getOnJoinCommands,
+    getOnLeaveCommands,
+    getOnMessageCommands,
+} from "./command-handling";
 
 import { Command, CommandCollection } from "./types";
 
@@ -29,6 +34,7 @@ const client = new Client({
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.GuildMessageReactions,
         GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildVoiceStates,
     ],
 });
 
@@ -79,6 +85,17 @@ client.on(Events.MessageCreate, async (message: Message) => {
     if (message.author.bot) return;
     onMessageCommands.forEach((command) => {
         command(message);
+    });
+});
+
+const onJoin = getOnJoinCommands();
+const onLeave = getOnLeaveCommands();
+
+client.on(Events.VoiceStateUpdate, (oldState, newState) => {
+    if (newState.member?.user.bot) return;
+
+    (newState.channelId !== null ? onJoin : onLeave).forEach((command) => {
+        command(newState);
     });
 });
 
