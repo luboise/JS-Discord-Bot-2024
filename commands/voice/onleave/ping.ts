@@ -4,7 +4,7 @@ import { UserVCList, getUserVCData } from "../../../utils/userTracking";
 import panicGetTextChannel from "../../../utils/panicGetTextChannel";
 
 const EARLY_THRESHOLD = 10000;
-const PING_FREQUENCY = 1000;
+const PING_FREQUENCY = 2000;
 
 const ping: VoiceCommand = (newState) => {
     const user = newState.member?.user;
