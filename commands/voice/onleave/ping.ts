@@ -1,15 +1,26 @@
 import { ChannelType, TextChannel } from "discord.js";
 import { VoiceCommand } from "../../../types";
+import { UserVCList, getUserVCData } from "../../../utils/userTracking";
+import panicGetTextChannel from "../../../utils/panicGetTextChannel";
+
+const EARLY_THRESHOLD = 10000;
 
 const ping: VoiceCommand = (newState) => {
-    const msg = `${newState.member?.toString()} left.`;
+    const user = newState.member?.user;
+    if (!user) return;
+
+    const msg = `${newState.member?.toString()} left TOO EARLY!`;
     if (!msg) return;
 
-    const channel = newState.guild.channels.cache
-        .filter((chnl) => chnl.type == ChannelType.GuildText)
-        .at(0) as TextChannel;
+    const vcData = getUserVCData(newState.guild, user);
+    if (!vcData || !vcData.timeLastLeft) return;
 
-    channel.send(msg);
+    const userLeftTooEarly =
+        vcData.timeLastLeft - vcData.timeLastJoined < EARLY_THRESHOLD;
+
+    if (userLeftTooEarly) {
+        panicGetTextChannel(newState.guild).send(msg);
+    }
 };
 
 export default ping;

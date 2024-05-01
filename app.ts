@@ -1,5 +1,7 @@
 require("dotenv").config();
 
+import { recordUserJoinTime, recordUserLeaveTime } from "./utils/userTracking";
+
 import {
     Client,
     Collection,
@@ -89,11 +91,19 @@ const onJoin = getCommands<VoiceCommand>(["voice", "onjoin"]);
 const onLeave = getCommands<VoiceCommand>(["voice", "onleave"]);
 
 client.on(Events.VoiceStateUpdate, (oldState, newState) => {
-    if (newState.member?.user.bot) return;
+    if (!newState.member || newState.member.user.bot) return;
 
-    (newState.channelId !== null ? onJoin : onLeave).forEach((command) => {
-        command(newState);
-    });
+    if (newState.channelId !== null) {
+        recordUserJoinTime(newState.guild, newState.member.user);
+        onJoin.forEach((command) => {
+            command(newState);
+        });
+    } else {
+        recordUserLeaveTime(newState.guild, newState.member.user);
+        onLeave.forEach((command) => {
+            command(newState);
+        });
+    }
 });
 
 // Log in to Discord with your client's token

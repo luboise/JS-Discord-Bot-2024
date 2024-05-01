@@ -1,5 +1,5 @@
 import { ChannelType, TextChannel } from "discord.js";
-import { VoiceCommand } from "../../../types";
+import { VoiceCommand } from "../../types";
 
 const trackJoin: VoiceCommand = (newState) => {
     const msg = `${newState.member?.toString()} joined.`;
