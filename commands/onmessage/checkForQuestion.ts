@@ -25,10 +25,12 @@ const checkForQuestion: MessageCommand = async (message: Message) => {
     const url = `https://www.googleapis.com/customsearch/v1?key=${process.env.GOOGLE_API_KEY}&cx=${process.env.GOOGLE_SEARCH_ENGINE_ID}&q=${question}&num=${NUM_SEARCHES}&start=1`;
 
     const searchResults = (await axios.get(url)).data.items;
-	if (!searchResults || searchResults.length === 0) {
-		message.reply("Sorry, I've hit the search limit for today. Have a reply anyway. 🤓");
-		return;
-	}
+    if (!searchResults || searchResults.length === 0) {
+        message.reply(
+            "Sorry, I've hit the search limit for today. Have a reply anyway. 🤓"
+        );
+        return;
+    }
     // const searchResults = testSearchResults;
 
     const processedSearchResults = new EmbedBuilder()

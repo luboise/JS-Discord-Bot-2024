@@ -90,15 +90,31 @@ client.on(Events.MessageCreate, async (message: Message) => {
 const onJoin = getCommands<VoiceCommand>(["voice", "onjoin"]);
 const onLeave = getCommands<VoiceCommand>(["voice", "onleave"]);
 
+enum UserVoiceEvent {
+    JOINED,
+    LEFT,
+    OTHER,
+}
+
 client.on(Events.VoiceStateUpdate, (oldState, newState) => {
     if (!newState.member || newState.member.user.bot) return;
 
-    if (newState.channelId !== null) {
+    let ve: UserVoiceEvent;
+
+    if (oldState.channelId === null && newState.channelId !== null) {
+        ve = UserVoiceEvent.JOINED;
+    } else if (oldState.channelId !== null && newState.channelId === null) {
+        ve = UserVoiceEvent.LEFT;
+    } else {
+        ve = UserVoiceEvent.OTHER;
+    }
+
+    if (ve === UserVoiceEvent.JOINED) {
         recordUserJoinTime(newState.guild, newState.member.user);
         onJoin.forEach((command) => {
             command(newState);
         });
-    } else {
+    } else if (ve === UserVoiceEvent.LEFT) {
         recordUserLeaveTime(newState.guild, newState.member.user);
         onLeave.forEach((command) => {
             command(newState);
