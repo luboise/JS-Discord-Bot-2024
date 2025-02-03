@@ -1,6 +1,6 @@
 import { ChannelType, VoiceChannel } from "discord.js";
 import { VoiceCommand } from "../../../types";
-import randRange from "../../../utils/randRange";
+import randBool from "../../../utils/randBool";
 
 const MOVE_THRESHOLD = 0.5;
 
@@ -9,12 +9,10 @@ const moveUser: VoiceCommand = (newState) => {
 		const user = newState.member?.user;
 		if (!user) return;
 
-		const val = randRange(0, 1);
-
 		const channelJoined = newState.channel;
 		if (!channelJoined) return;
 
-		if (val > MOVE_THRESHOLD) {
+		if (randBool(MOVE_THRESHOLD)) {
 			//const voiceChannels = newState.channel.guild.channels.cache
 			//	.filter((c) => c.type === ChannelType.GuildVoice)
 			//	.sort((a, b) => a.position - b.position)
@@ -35,8 +33,11 @@ const moveUser: VoiceCommand = (newState) => {
 			);
 			if (index == -1) return;
 
-			const newVoiceChannel =
-				voiceChannels[(index + 1) % voiceChannels.length];
+			let newIndex = index - 1 + (randBool(0.5) ? 0 : 2);
+			if (newIndex < 0) newIndex = voiceChannels.length - 1;
+			newIndex %= voiceChannels.length;
+
+			const newVoiceChannel = voiceChannels[newIndex];
 
 			newState.member.voice.setChannel(newVoiceChannel);
 		}
